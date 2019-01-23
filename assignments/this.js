@@ -39,12 +39,12 @@ implicitModule.getName();
 // Principle 3
 
 // code example for New Binding
-function projectModule (args) {
+function ProjectModule (args) {
   this.manager = args.manager;
   this.rating = `${args.rating}%`;
 }
 
-const project = new projectModule({ manager: 'Adam McKenney', rating: 100 });
+const project = new ProjectModule({ manager: 'Adam McKenney', rating: 100 });
 
 console.log(project);
 
