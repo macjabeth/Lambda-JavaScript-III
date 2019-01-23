@@ -139,3 +139,111 @@ console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
 // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.
 // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
 // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+function Hero (attributes) {
+  Humanoid.call(this, attributes);
+  this.weaponDamage = attributes.weaponDamage;
+}
+
+Hero.prototype = Object.create(Humanoid.prototype);
+
+Hero.prototype.holyStrike = function (target) {
+  let damage = this.befuddled ? this.weaponDamage : this.weaponDamage * 2;
+  damage += this.healthPoints * 0.5;
+  target.healthPoints -= damage;
+  if (target.healthPoints <= 0) {
+    console.log(`${target.name} can no longer withstand ${this.name}'s mighty ${this.weapons}.`);
+    console.log(target.destroy());
+  }
+};
+
+Hero.prototype.revitalise = function (target) {
+  const amount = this.befuddled ? this.healthPoints * 0.25 : this.healthPoints * 0.5;
+  target.healthPoints += amount;
+};
+
+function Villain (attributes) {
+  Humanoid.call(this, attributes);
+  this.weaponDamage = attributes.weaponDamage;
+}
+
+Villain.prototype = Object.create(Humanoid.prototype);
+
+Villain.prototype.waveStaff = function (target) {
+  target.healthPoints -= this.weaponDamage;
+  if (target.healthPoints <= 0) {
+    console.log(`${target.name} can no longer withstand ${this.name}'s magical ${this.weapons}.`);
+    target.destroy();
+  } else {
+    target.befuddled = !target.befuddled;
+    target.befuddleTimer = setTimeout(function () {
+      target.befuddled = !target.befuddled;
+    }, 2000);
+  }
+};
+
+const josh = new Hero({
+  createdAt: new Date(),
+  dimensions: {
+    length: 2,
+    width: 4,
+    height: 8
+  },
+  healthPoints: 25,
+  name: 'Josh',
+  team: 'Asgard',
+  weapons: ['Claymore'],
+  weaponDamage: 10,
+  language: 'English'
+});
+
+const adam = new Villain({
+  createdAt: new Date(),
+  dimensions: {
+    length: 3,
+    width: 6,
+    height: 12
+  },
+  healthPoints: 50,
+  name: 'Adam',
+  team: 'Celeste',
+  weapons: ['Staff of Animation'],
+  weaponDamage: 10,
+  language: 'English'
+});
+
+console.log(josh.healthPoints);
+console.log(adam.healthPoints);
+
+adam.waveStaff(josh);
+
+console.log(josh.healthPoints);
+console.log(josh.befuddled);
+
+josh.revitalise(josh);
+josh.holyStrike(adam);
+
+console.log(josh.healthPoints);
+console.log(adam.healthPoints);
+
+adam.waveStaff(josh);
+
+console.log(josh.healthPoints);
+console.log(josh.befuddled);
+
+josh.revitalise(josh);
+josh.holyStrike(adam);
+
+console.log(josh.healthPoints);
+console.log(adam.healthPoints);
+
+adam.waveStaff(josh);
+
+console.log(josh.healthPoints);
+console.log(josh.befuddled);
+
+josh.revitalise(josh);
+josh.holyStrike(adam);
+
+console.log(josh.healthPoints);
+console.log(adam.healthPoints);
