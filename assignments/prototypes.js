@@ -140,6 +140,15 @@ console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
 // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
 // * Create two new objects, one a villain and one a hero and fight it out with methods!
 
+function getRandomInt (max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+function getLimb () {
+  const limbs = ['head', 'chest', 'right arm', 'left arm', 'right leg', 'left leg'];
+  return limbs[getRandomInt(limbs.length)];
+}
+
 function Hero (attributes) {
   Humanoid.call(this, attributes);
   this.weaponDamage = attributes.weaponDamage;
@@ -147,19 +156,29 @@ function Hero (attributes) {
 
 Hero.prototype = Object.create(Humanoid.prototype);
 
-Hero.prototype.holyStrike = function (target) {
-  let damage = this.befuddled ? this.weaponDamage : this.weaponDamage * 2;
-  damage += this.healthPoints * 0.5;
-  target.healthPoints -= damage;
-  if (target.healthPoints <= 0) {
-    console.log(`${target.name} can no longer withstand ${this.name}'s mighty ${this.weapons}.`);
-    console.log(target.destroy());
-  }
+Hero.prototype.revitalise = function (amount) {
+  this.healthPoints += amount;
 };
 
-Hero.prototype.revitalise = function (target) {
-  const amount = this.befuddled ? this.healthPoints * 0.25 : this.healthPoints * 0.5;
-  target.healthPoints += amount;
+Hero.prototype.holyStrike = function (target) {
+  const damage = (this.befuddled ? this.weaponDamage * 0.5 : this.weaponDamage * 2) + getRandomInt(10);
+
+  this.revitalise(damage * 0.25);
+
+  target.healthPoints -= damage;
+
+  console.log(`"Nebula valesti!" shouts ${this.name}, his holy claymore hurtling down and cutting a deep gash across ${target.name}'s ${getLimb()}.`);
+  console.log(`He hits for ${damage} health points: ${target.healthPoints} / 100`);
+
+  if (target.healthPoints <= 0) {
+    console.log(`${target.name} can no longer withstand the pain. He collapses to the floor in a pitiful heap.`);
+    console.log(target.destroy());
+    return false;
+  }
+
+  console.log(`${target.name} roars in defiance, parrying ${this.name}'s blow with a swift flick of the wrist.`);
+
+  return true;
 };
 
 function Villain (attributes) {
@@ -170,16 +189,24 @@ function Villain (attributes) {
 Villain.prototype = Object.create(Humanoid.prototype);
 
 Villain.prototype.waveStaff = function (target) {
-  target.healthPoints -= this.weaponDamage;
+  const damage = this.weaponDamage + getRandomInt(20);
+
+  target.healthPoints -= damage;
+
+  console.log(`Dark tendrils whip around ${this.name}'s ${this.weapons} as he points it in ${target.name}'s direction, sapping away at his resolve.`);
+  console.log(`He hits for ${this.weaponDamage} health points: ${target.healthPoints} / 100`);
+
   if (target.healthPoints <= 0) {
-    console.log(`${target.name} can no longer withstand ${this.name}'s magical ${this.weapons}.`);
-    target.destroy();
-  } else {
-    target.befuddled = !target.befuddled;
-    target.befuddleTimer = setTimeout(function () {
-      target.befuddled = !target.befuddled;
-    }, 2000);
+    console.log(`${target.name}'s mind has crumbled.`);
+    console.log(target.destroy());
+    return false;
   }
+
+  console.log(`${target.name} clutches at his eyes and screams as his sanity slips away.`);
+
+  target.befuddled = !target.befuddled;
+
+  return true;
 };
 
 const josh = new Hero({
@@ -189,7 +216,7 @@ const josh = new Hero({
     width: 4,
     height: 8
   },
-  healthPoints: 25,
+  healthPoints: 100,
   name: 'Josh',
   team: 'Asgard',
   weapons: ['Claymore'],
@@ -204,7 +231,7 @@ const adam = new Villain({
     width: 6,
     height: 12
   },
-  healthPoints: 50,
+  healthPoints: 100,
   name: 'Adam',
   team: 'Celeste',
   weapons: ['Staff of Animation'],
@@ -212,38 +239,12 @@ const adam = new Villain({
   language: 'English'
 });
 
-console.log(josh.healthPoints);
-console.log(adam.healthPoints);
+console.log('***** LET THE BATTLE BEGIN *****');
 
-adam.waveStaff(josh);
+let battling;
 
-console.log(josh.healthPoints);
-console.log(josh.befuddled);
-
-josh.revitalise(josh);
-josh.holyStrike(adam);
-
-console.log(josh.healthPoints);
-console.log(adam.healthPoints);
-
-adam.waveStaff(josh);
-
-console.log(josh.healthPoints);
-console.log(josh.befuddled);
-
-josh.revitalise(josh);
-josh.holyStrike(adam);
-
-console.log(josh.healthPoints);
-console.log(adam.healthPoints);
-
-adam.waveStaff(josh);
-
-console.log(josh.healthPoints);
-console.log(josh.befuddled);
-
-josh.revitalise(josh);
-josh.holyStrike(adam);
-
-console.log(josh.healthPoints);
-console.log(adam.healthPoints);
+do {
+  battling = Math.random() > 0.5 ? adam.waveStaff(josh) : josh.holyStrike(adam);
+  console.log('---');
+}
+while (battling);
