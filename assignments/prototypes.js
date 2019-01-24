@@ -193,7 +193,7 @@ Villain.prototype.waveStaff = function (target) {
 
   target.healthPoints -= damage;
 
-  console.log(`Dark tendrils whip around ${this.name}'s ${this.weapons} as he points it in ${target.name}'s direction, sapping away at his resolve.`);
+  console.log(`Dark tendrils whip around ${this.name}'s ${this.weapons} as he points it at ${target.name}, sapping away at his resolve.`);
   console.log(`He hits for ${this.weaponDamage} health points: ${target.healthPoints} / 100`);
 
   if (target.healthPoints <= 0) {
