@@ -161,13 +161,20 @@ Hero.prototype.revitalise = function (amount) {
 };
 
 Hero.prototype.holyStrike = function (target) {
-  const damage = (this.befuddled ? this.weaponDamage * 0.5 : this.weaponDamage * 2) + getRandomInt(10);
+  if (this.befuddled && Math.random() < 0.25) {
+    console.log(`${this.name} stumbles forward, his befuddled mind causing him to lose balance.`);
+    return true;
+  }
 
-  this.revitalise(damage * 0.25);
+  const damage = (this.befuddled ? this.weaponDamage * 0.5 : this.weaponDamage * 2) + getRandomInt(10);
+  const healed = Math.floor(damage * 0.25);
+
+  this.revitalise(healed);
 
   target.healthPoints -= damage;
 
   console.log(`"Nebula valesti!" shouts ${this.name}, his holy claymore hurtling down and cutting a deep gash across ${target.name}'s ${getLimb()}.`);
+  if (!this.befuddled) console.log(`The holy pact with his deity aids him in his plight: his health has risen by ${healed} point${healed > 1 ? 's' : ''}.`);
   console.log(`He hits for ${damage} health points: ${target.healthPoints} / 100`);
 
   if (target.healthPoints <= 0) {
@@ -194,7 +201,7 @@ Villain.prototype.waveStaff = function (target) {
   target.healthPoints -= damage;
 
   console.log(`Dark tendrils whip around ${this.name}'s ${this.weapons} as he points it at ${target.name}, sapping away at his resolve.`);
-  console.log(`He hits for ${this.weaponDamage} health points: ${target.healthPoints} / 100`);
+  console.log(`He hits for ${damage} health points: ${target.healthPoints} / 100`);
 
   if (target.healthPoints <= 0) {
     console.log(`${target.name}'s mind has crumbled.`);
